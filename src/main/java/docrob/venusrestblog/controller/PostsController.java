@@ -2,19 +2,17 @@ package docrob.venusrestblog.controller;
 
 import docrob.venusrestblog.data.Post;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/posts", headers = "Accept=application/json")
+@RequestMapping(value = "/api/posts", produces = "application/json")
 public class PostsController {
 
-    @GetMapping("/")
+//    @GetMapping("/")
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<Post> fetchPosts() {
         // TODO: go get some posts and return them
         List<Post> posts = new ArrayList<>();
@@ -36,5 +34,10 @@ public class PostsController {
                 // TODO: respond with a 404
                 throw new RuntimeException("Hey man, resource not found");
         }
+    }
+
+    @GetMapping("test")
+    public String doTest() {
+        return "<h1>hello</h1>";
     }
 }
