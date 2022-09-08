@@ -10,34 +10,46 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/posts", produces = "application/json")
 public class PostsController {
+    private List<Post> posts = new ArrayList<>();
 
-//    @GetMapping("/")
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping("/")
+//    @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<Post> fetchPosts() {
-        // TODO: go get some posts and return them
-        List<Post> posts = new ArrayList<>();
-        posts.add(new Post(1L, "Post 1", "This is Post 1"));
-        posts.add(new Post(2L, "Post 2", "This is Post 2"));
-
         return posts;
     }
 
     @GetMapping("/{id}")
     public Post fetchPostById(@PathVariable long id) {
-        // TODO: go get some posts and return them
-        switch((int) id) {
-            case 1:
-                return new Post(1L, "Post 1", "This is Post 1");
-            case 2:
-                return new Post(2L, "Post 2", "This is Post 2");
-            default:
-                // TODO: respond with a 404
-                throw new RuntimeException("Hey man, resource not found");
+        // search through the list of posts
+        // and return the post that matches the given id
+        for (Post post: posts) {
+            if(post.getId() == id) {
+                return post;
+            }
         }
+        // what to do if we don't find it
+        throw new RuntimeException("I don't know what I am doing");
     }
 
-    @GetMapping("test")
-    public String doTest() {
-        return "<h1>hello</h1>";
+    @PostMapping("/")
+    public void createPost(@RequestBody Post newPost) {
+//        System.out.println(newPost);
+        posts.add(newPost);
     }
+
+    @DeleteMapping("/{id}")
+    public void deletePostById(@PathVariable long id) {
+        // search through the list of posts
+        // and delete the post that matches the given id
+        for (Post post: posts) {
+            if(post.getId() == id) {
+                // if we find the post then delete it
+                posts.remove(post);
+                return;
+            }
+        }
+        // what to do if we don't find it
+        throw new RuntimeException("I don't know what I am doing");
+    }
+
 }
