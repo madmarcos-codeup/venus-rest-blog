@@ -11,10 +11,12 @@ import java.util.List;
 @RequestMapping(value = "/api/posts", produces = "application/json")
 public class PostsController {
     private List<Post> posts = new ArrayList<>();
+    private long nextId = 1;
 
-    @GetMapping("/")
+    @GetMapping("")
 //    @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<Post> fetchPosts() {
+        System.out.println("Hey I made a change!");
         return posts;
     }
 
@@ -23,9 +25,13 @@ public class PostsController {
         // search through the list of posts
         // and return the post that matches the given id
         Post post = findPostById(id);
+        if(post == null) {
+            // what to do if we don't find it
+            throw new RuntimeException("I don't know what I am doing");
+        }
 
-        // what to do if we don't find it
-        throw new RuntimeException("I don't know what I am doing");
+        // we found the post so just return it
+        return post;
     }
 
     private Post findPostById(long id) {
@@ -38,9 +44,13 @@ public class PostsController {
         return null;
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public void createPost(@RequestBody Post newPost) {
 //        System.out.println(newPost);
+        // assign  nextId to the new post
+        newPost.setId(nextId);
+        nextId++;
+
         posts.add(newPost);
     }
 
