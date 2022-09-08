@@ -22,13 +22,20 @@ public class PostsController {
     public Post fetchPostById(@PathVariable long id) {
         // search through the list of posts
         // and return the post that matches the given id
+        Post post = findPostById(id);
+
+        // what to do if we don't find it
+        throw new RuntimeException("I don't know what I am doing");
+    }
+
+    private Post findPostById(long id) {
         for (Post post: posts) {
             if(post.getId() == id) {
                 return post;
             }
         }
-        // what to do if we don't find it
-        throw new RuntimeException("I don't know what I am doing");
+        // didn't find it so do something
+        return null;
     }
 
     @PostMapping("/")
@@ -41,15 +48,31 @@ public class PostsController {
     public void deletePostById(@PathVariable long id) {
         // search through the list of posts
         // and delete the post that matches the given id
-        for (Post post: posts) {
-            if(post.getId() == id) {
-                // if we find the post then delete it
-                posts.remove(post);
-                return;
-            }
+        Post post = findPostById(id);
+        if(post != null) {
+            posts.remove(post);
+            return;
         }
         // what to do if we don't find it
-        throw new RuntimeException("I don't know what I am doing");
+        throw new RuntimeException("Post not found");
     }
 
+    @PutMapping("/{id}")
+    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id) {
+        // find the post to update in the posts list
+
+        Post post = findPostById(id);
+        if(post == null) {
+            System.out.println("Post not found");
+        } else {
+            if(updatedPost.getTitle() != null) {
+                post.setTitle(updatedPost.getTitle());
+            }
+            if(updatedPost.getContent() != null) {
+                post.setContent(updatedPost.getContent());
+            }
+            return;
+        }
+        throw new RuntimeException("Post not found");
+    }
 }
