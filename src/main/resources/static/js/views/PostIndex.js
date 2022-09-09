@@ -1,6 +1,8 @@
 import CreateView from "../createView.js";
 
 export default function PostIndex(props) {
+    const postsHTML = generatePostsHTML(props.posts);
+
     return `
         <header>
             <h1>Posts Page</h1>
@@ -8,7 +10,7 @@ export default function PostIndex(props) {
         <main>
               <h3>Lists of posts</h3>
             <div>
-                ${props.posts.map(post => `<h3>${post.title}</h3>`).join('')}   
+                ${postsHTML}   
             </div>
             
             <h3>Add a post</h3>
@@ -25,10 +27,47 @@ export default function PostIndex(props) {
     `;
 }
 
+function generatePostsHTML(posts) {
+    let postsHTML = `
+        <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Content</th>
+        </tr>
+        </thead>
+        <tbody>
+    `;
+    for (let i = 0; i < posts.length; i++) {
+        const post = posts[i];
+        postsHTML += `<tr>
+            <td>${post.title}</td>
+            <td>${post.content}</td>
+            <td><button data-id=${post.id} class="editPost">Edit</button></td>
+            <td><button data-id=${post.id} class="deletePost">Delete</button></td>
+            </tr>`;
+    }
+    postsHTML += `</tbody></table>`;
+    return postsHTML;
+}
+
 export function postSetup() {
     addPostHandler();
-    // editPostHandler setup
-    // deletePostHandler setup
+    editPostHandlers();
+    deletePostHandlers();
+}
+
+function editPostHandlers() {
+    const editButtons = document.querySelectorAll(".editPost");
+    for (let i = 0; i < editButtons.length; i++) {
+        editButtons[i].addEventListener("click", function(event) {
+            console.log("edit a post");
+        });
+    }
+}
+
+function deletePostHandlers() {
+
 }
 
 function addPostHandler() {
