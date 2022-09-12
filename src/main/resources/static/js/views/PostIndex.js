@@ -134,10 +134,14 @@ function deletePost(postId) {
         method: "DELETE",
         headers: {"Content-Type": "application/json"},
     }
-    const url = "http://localhost:8081/api/posts/" + postId;
+    const url = POST_API_BASE_URL + `/${postId}`;
     fetch(url, request)
         .then(function(response) {
-            // TODO: check the response code
+            if(response.status !== 200) {
+                console.log("fetch returned bad status code: " + response.status);
+                console.log(response.statusText);
+                return;
+            }
             CreateView("/posts");
         })
 }
@@ -151,40 +155,43 @@ function deletePost(postId) {
 function setupSaveHandler() {
     const saveButton = document.querySelector("#savePost");
     saveButton.addEventListener("click", function(event) {
-
-        // TODO: refactor later to a separate function for hygiene
-
-        // TODO: check the data-id for the save button
         const postId = parseInt(this.getAttribute("data-id"));
-
-        // get the title and content for the new/updated post
-        const titleField = document.querySelector("#title");
-        const contentField = document.querySelector("#content");
-
-        // make the new/updated post object
-        const post = {
-            title: titleField.value,
-            content: contentField.value
-        }
-
-        // make the request
-        const request = {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(post)
-        }
-        let url = "http://localhost:8081/api/posts";
-
-        // if we are updating a post, change the request and the url
-        if(postId > 0) {
-            request.method = "PUT";
-            url += `/${postId}`;
-        }
-
-        fetch(url, request)
-            .then(function(response) {
-                // TODO: check the status code
-                CreateView("/posts");
-            })
+        savePost(postId);
     });
+}
+
+function savePost(postId) {
+    // get the title and content for the new/updated post
+    const titleField = document.querySelector("#title");
+    const contentField = document.querySelector("#content");
+
+    // make the new/updated post object
+    const post = {
+        title: titleField.value,
+        content: contentField.value
+    }
+
+    // make the request
+    const request = {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(post)
+    }
+    let url = POST_API_BASE_URL;
+
+    // if we are updating a post, change the request and the url
+    if(postId > 0) {
+        request.method = "PUT";
+        url += `/${postId}`;
+    }
+
+    fetch(url, request)
+        .then(function(response) {
+            if(response.status !== 200) {
+                console.log("fetch returned bad status code: " + response.status);
+                console.log(response.statusText);
+                return;
+            }
+            CreateView("/posts");
+        })
 }

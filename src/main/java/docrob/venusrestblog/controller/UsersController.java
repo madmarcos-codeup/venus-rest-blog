@@ -44,7 +44,6 @@ public class UsersController {
 
     @PostMapping("/create")
     public void createUser(@RequestBody User newUser) {
-//        System.out.println(newPost);
         // assign  nextId to the new post
         newUser.setId(nextId);
         nextId++;
