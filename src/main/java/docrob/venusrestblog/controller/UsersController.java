@@ -32,6 +32,26 @@ public class UsersController {
         return user;
     }
 
+    @GetMapping("/username/{userName}")
+    private User fetchByUserName(@PathVariable String userName) {
+        User user = findUserByUserName(userName);
+        if(user == null) {
+            // what to do if we don't find it
+            throw new RuntimeException("I don't know what I am doing");
+        }
+        return user;
+    }
+
+    private User findUserByUserName(String userName) {
+        for (User user: users) {
+            if(user.getUserName().equals(userName)) {
+                return user;
+            }
+        }
+        // didn't find it so do something
+        return null;
+    }
+
     private User findUserById(long id) {
         for (User user: users) {
             if(user.getId() == id) {
