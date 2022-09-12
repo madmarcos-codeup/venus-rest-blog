@@ -16,7 +16,6 @@ public class PostsController {
     @GetMapping("")
 //    @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<Post> fetchPosts() {
-        System.out.println("Hey I made a change!");
         return posts;
     }
 

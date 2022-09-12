@@ -1,7 +1,11 @@
 import CreateView from "../createView.js";
 
+let posts;
+
 export default function PostIndex(props) {
     const postsHTML = generatePostsHTML(props.posts);
+    // save this for loading edits later
+    posts = props.posts;
 
     return `
         <header>
@@ -20,7 +24,8 @@ export default function PostIndex(props) {
                 <br>
                 <label for="content">Content</label><br>
                 <textarea id="content" name="content" rows="10" cols="50" placeholder="Enter content"></textarea>
-                <button id="addPost" name="addPost">Add Post</button>
+                <br>
+                <button data-id="0" id="savePost" name="savePost" class="button btn-primary">Save Post</button>
             </form>
             
         </main>
@@ -43,53 +48,142 @@ function generatePostsHTML(posts) {
         postsHTML += `<tr>
             <td>${post.title}</td>
             <td>${post.content}</td>
-            <td><button data-id=${post.id} class="editPost">Edit</button></td>
-            <td><button data-id=${post.id} class="deletePost">Delete</button></td>
+            <td><button data-id=${post.id} class="button btn-primary editPost">Edit</button></td>
+            <td><button data-id=${post.id} class="button btn-danger deletePost">Delete</button></td>
             </tr>`;
     }
     postsHTML += `</tbody></table>`;
     return postsHTML;
 }
 
+
+
+
 export function postSetup() {
-    addPostHandler();
-    editPostHandlers();
-    deletePostHandlers();
+    setupSaveHandler();
+    setupEditHandlers();
+    setupDeleteHandlers();
 }
 
-function editPostHandlers() {
+function setupEditHandlers() {
+    // target all delete buttons
     const editButtons = document.querySelectorAll(".editPost");
+    // add click handler to all delete buttons
     for (let i = 0; i < editButtons.length; i++) {
         editButtons[i].addEventListener("click", function(event) {
-            console.log("edit a post");
+
+            // get the post id of the delete button
+            const postId = parseInt(this.getAttribute("data-id"));
+
+            loadPostIntoForm(postId);
         });
     }
 }
 
-function deletePostHandlers() {
+function loadPostIntoForm(postId) {
+    // go find the post in the posts data that matches postId
+    const post = fetchPostById(postId);
+    if(!post) {
+        console.log("did not find post for id " + postId);
+        return;
+    }
 
+    // load the post data into the form
+    const titleField = document.querySelector("#title");
+    const contentField = document.querySelector("#content");
+    titleField.value = post.title;
+    contentField.value = post.content;
+
+    const saveButton = document.querySelector("#savePost");
+    saveButton.setAttribute("data-id", postId);
 }
 
-function addPostHandler() {
-    const addButton = document.querySelector("#addPost");
-    addButton.addEventListener("click", function(event) {
+function fetchPostById(postId) {
+    for (let i = 0; i < posts.length; i++) {
+        if(posts[i].id === postId) {
+            return posts[i];
+        }
+
+    }
+    // didn't find it so return something falsy
+    return false;
+}
+
+
+
+
+
+
+function setupDeleteHandlers() {
+    // target all delete buttons
+    const deleteButtons = document.querySelectorAll(".deletePost");
+    // add click handler to all delete buttons
+    for (let i = 0; i < deleteButtons.length; i++) {
+        deleteButtons[i].addEventListener("click", function(event) {
+
+            // get the post id of the delete button
+            const postId = this.getAttribute("data-id");
+
+            deletePost(postId);
+        });
+    }
+}
+
+function deletePost(postId) {
+    const request = {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json"},
+    }
+    const url = "http://localhost:8081/api/posts/" + postId;
+    fetch(url, request)
+        .then(function(response) {
+            // TODO: check the response code
+            CreateView("/posts");
+        })
+}
+
+
+
+
+
+
+
+function setupSaveHandler() {
+    const saveButton = document.querySelector("#savePost");
+    saveButton.addEventListener("click", function(event) {
+
+        // TODO: refactor later to a separate function for hygiene
+
+        // TODO: check the data-id for the save button
+        const postId = parseInt(this.getAttribute("data-id"));
+
+        // get the title and content for the new/updated post
         const titleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
 
-        let newPost = {
+        // make the new/updated post object
+        const post = {
             title: titleField.value,
             content: contentField.value
         }
 
-        let request = {
+        // make the request
+        const request = {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(newPost)
+            body: JSON.stringify(post)
+        }
+        let url = "http://localhost:8081/api/posts";
+
+        // if we are updating a post, change the request and the url
+        if(postId > 0) {
+            request.method = "PUT";
+            url += `/${postId}`;
         }
 
-        fetch("http://localhost:8081/api/posts", request)
-            .then(response => {
-                console.log(response.status);
+        fetch(url, request)
+            .then(function(response) {
+                // TODO: check the status code
                 CreateView("/posts");
             })
     });
