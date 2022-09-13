@@ -2,6 +2,7 @@ package docrob.venusrestblog.controller;
 
 import docrob.venusrestblog.data.Post;
 
+import docrob.venusrestblog.data.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -48,6 +49,14 @@ public class PostsController {
 //        System.out.println(newPost);
         // assign  nextId to the new post
         newPost.setId(nextId);
+
+        // use a fake author for the post
+        User fakeAuthor = new User();
+        fakeAuthor.setId(99);
+        fakeAuthor.setUserName("fake author");
+        fakeAuthor.setEmail("fakeauthor@stuff.com");
+        newPost.setAuthor(fakeAuthor);
+
         nextId++;
 
         posts.add(newPost);

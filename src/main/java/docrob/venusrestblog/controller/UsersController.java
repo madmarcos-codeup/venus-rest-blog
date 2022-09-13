@@ -2,7 +2,9 @@ package docrob.venusrestblog.controller;
 
 import docrob.venusrestblog.data.User;
 import docrob.venusrestblog.data.UserRole;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -13,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/users", produces = "application/json")
 public class UsersController {
-    private final List<User> users = new ArrayList<>(List.of(new User(1, "docrob", "docrob@docrob.com", "12345", LocalDate.now(), UserRole.ADMIN)));
+    private final List<User> users = new ArrayList<>(List.of(new User(1, "docrob", "docrob@docrob.com", "12345", LocalDate.now(), UserRole.ADMIN, new ArrayList<>())));
     private long nextId = 2;
 
     @GetMapping("")
@@ -131,10 +133,10 @@ public class UsersController {
     }
 
     @PutMapping("/{id}/updatePassword")
-    private void updatePassword(@PathVariable Long id, @RequestParam(required = false) String oldPassword, @Valid @Size(min = 3) @RequestParam String newPassword) {
+    private void updatePassword(@PathVariable Long id, @RequestParam(required = false) String oldPassword, @RequestParam String newPassword) {
         User user = findUserById(id);
         if(user == null) {
-            throw new RuntimeException("cannot find user " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id " + id + " not found");
         }
 
         // compare old password with saved pw
@@ -144,7 +146,7 @@ public class UsersController {
 
         // validate new password
         if(newPassword.length() < 3) {
-            throw new RuntimeException("new pw length must be at least 3");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "new pw length must be at least 3 characters");
         }
 
         user.setPassword(newPassword);
