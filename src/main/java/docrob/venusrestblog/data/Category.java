@@ -9,12 +9,9 @@ import java.util.Collection;
 @Getter
 @Setter
 @ToString
-public class Post {
+public class Category {
     private Long id;
-    private String title;
-    private String content;
+    private String name;
 
-    private User author;
-    private Collection<Category> categories;
+    private Collection<Post> posts;
 }
-

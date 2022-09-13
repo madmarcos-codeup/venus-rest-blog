@@ -1,5 +1,6 @@
 package docrob.venusrestblog.controller;
 
+import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
@@ -56,6 +57,13 @@ public class PostsController {
         fakeAuthor.setUserName("fake author");
         fakeAuthor.setEmail("fakeauthor@stuff.com");
         newPost.setAuthor(fakeAuthor);
+
+        // make some fake categories and throw them in the new post
+        Category cat1 = new Category(1L, "bunnies", null);
+        Category cat2 = new Category(2L, "margaritas", null);
+        newPost.setCategories(new ArrayList<>());
+        newPost.getCategories().add(cat1);
+        newPost.getCategories().add(cat2);
 
         nextId++;
 
