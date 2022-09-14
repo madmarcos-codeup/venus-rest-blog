@@ -4,6 +4,7 @@ import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.repository.CategoriesRepository;
 import docrob.venusrestblog.repository.PostsRepository;
 import docrob.venusrestblog.repository.UsersRepository;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.Optional;
 public class PostsController {
     private PostsRepository postsRepository;
     private UsersRepository usersRepository;
-
+    private CategoriesRepository categoriesRepository;
 
     @GetMapping("")
     public List<Post> fetchPosts() {
@@ -37,6 +38,12 @@ public class PostsController {
         // use a fake author for the post
         User author = usersRepository.findById(1L).get();
         newPost.setAuthor(author);
+
+        Category cat1 = categoriesRepository.findById(1L).get();
+        Category cat2 = categoriesRepository.findById(2L).get();
+        newPost.setCategories(new ArrayList<>());
+        newPost.getCategories().add(cat1);
+        newPost.getCategories().add(cat2);
 //
 //        // make some fake categories and throw them in the new post
 //        Category cat1 = new Category(1L, "bunnies", null);

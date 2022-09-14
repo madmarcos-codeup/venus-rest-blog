@@ -34,7 +34,7 @@ public class User {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false)
+    @Column()
     private LocalDate createdAt;
 
     @NotNull
