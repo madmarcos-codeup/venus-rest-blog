@@ -49,18 +49,23 @@ function generatePostsHTML(posts) {
         const post = posts[i];
 
         let categories = '';
-        for (let j = 0; j < post.categories.length; j++) {
-            if(categories !== "") {
-                categories += ", ";
+        if(post.categories) {
+            for (let j = 0; j < post.categories.length; j++) {
+                if (categories !== "") {
+                    categories += ", ";
+                }
+                categories += post.categories[j].name;
             }
-            categories += post.categories[j].name;
         }
-
+        let authorName = "";
+        if(post.author) {
+            authorName = post.author.name;
+        }
         postsHTML += `<tr>
             <td>${post.title}</td>
             <td>${post.content}</td>
             <td>${categories}</td>
-            <td>${post.author.userName}</td>
+            <td>${authorName}</td>
             <td><button data-id=${post.id} class="button btn-primary editPost">Edit</button></td>
             <td><button data-id=${post.id} class="button btn-danger deletePost">Delete</button></td>
             </tr>`;
