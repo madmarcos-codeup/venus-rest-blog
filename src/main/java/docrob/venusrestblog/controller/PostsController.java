@@ -5,20 +5,21 @@ import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
 import docrob.venusrestblog.repository.PostsRepository;
+import docrob.venusrestblog.repository.UsersRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping(value = "/api/posts", produces = "application/json")
 public class PostsController {
     private PostsRepository postsRepository;
+    private UsersRepository usersRepository;
 
-    public PostsController(PostsRepository postsRepository) {
-        this.postsRepository = postsRepository;
-    }
 
     @GetMapping("")
     public List<Post> fetchPosts() {
@@ -34,11 +35,8 @@ public class PostsController {
     public void createPost(@RequestBody Post newPost) {
 
         // use a fake author for the post
-//        User fakeAuthor = new User();
-//        fakeAuthor.setId(99);
-//        fakeAuthor.setUserName("fake author");
-//        fakeAuthor.setEmail("fakeauthor@stuff.com");
-//        newPost.setAuthor(fakeAuthor);
+        User author = usersRepository.findById(1L).get();
+        newPost.setAuthor(author);
 //
 //        // make some fake categories and throw them in the new post
 //        Category cat1 = new Category(1L, "bunnies", null);

@@ -1,5 +1,6 @@
 package docrob.venusrestblog.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,7 +24,8 @@ public class Post {
     @Column(nullable = false, length = 1024)
     private String content;
 
-    @Transient
+    @ManyToOne
+    @JsonIgnoreProperties({"posts", "password"})
     private User author;
 
     @Transient
