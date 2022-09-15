@@ -1,4 +1,4 @@
-package docrob.venusrestblog.misc_stuff;
+package docrob.venusrestblog.misc;
 
 import lombok.*;
 

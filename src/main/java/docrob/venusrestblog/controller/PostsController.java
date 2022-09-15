@@ -4,11 +4,15 @@ import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.CategoriesRepository;
 import docrob.venusrestblog.repository.PostsRepository;
 import docrob.venusrestblog.repository.UsersRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +71,15 @@ public class PostsController {
         // in case id is not in the request body (i.e., updatedPost), set it
         // with the path variable id
         updatedPost.setId(id);
-        postsRepository.save(updatedPost);
+
+        Optional<Post> originalPost = postsRepository.findById(id);
+        if(originalPost.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post " + id + " not found");
+        }
+        // copy any new field values FROM updatedPost TO originalPost
+        BeanUtils.copyProperties(updatedPost, originalPost.get(), FieldHelper.getNullPropertyNames(updatedPost));
+
+        postsRepository.save(originalPost.get());
 
 //        // find the post to update in the posts list
 //

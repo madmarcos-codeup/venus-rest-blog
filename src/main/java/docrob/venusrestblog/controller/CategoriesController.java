@@ -1,7 +1,6 @@
 package docrob.venusrestblog.controller;
 
 import docrob.venusrestblog.data.Category;
-import docrob.venusrestblog.data.Post;
 import docrob.venusrestblog.repository.CategoriesRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @AllArgsConstructor
@@ -20,10 +18,14 @@ public class CategoriesController {
     private CategoriesRepository categoriesRepository;
 
     @GetMapping("")
-    private List<Category> fetchPostsByCategory(@RequestParam String categoryName) {
-
-
+    private List<Category> fetchAllCategories(@RequestParam String categoryName) {
+        if(categoryName != null & categoryName.length() > 0) {
+            Category cat = categoriesRepository.findByName(categoryName);
+            if(cat == null) {
+                return null;
+            }
+            return new ArrayList<>(List.of(categoriesRepository.findByName(categoryName)));
+        }
         return categoriesRepository.findAll();
     }
-
 }
