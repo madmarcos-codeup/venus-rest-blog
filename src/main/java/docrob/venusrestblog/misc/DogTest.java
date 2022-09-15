@@ -45,18 +45,17 @@ public class DogTest {
             System.out.println(aDog.getName());
         }
     }
-
     private static void testWithoutDogWithOptional() {
         dogs = new ArrayList<>();
         // maybe add a starting dog
 //        dogs.add(new Dog("Spot"));
 
         Optional<Dog> aDog = fetchDogOptional();
-        if(aDog.isEmpty()) {
-            System.out.println("no dog found");
-        } else {
+//        if(aDog.isEmpty()) {
+//            System.out.println("no dog found");
+//        } else {
             System.out.println(aDog.get().getName());
-        }
+//        }
     }
 
     public static Dog fetchDog() {
