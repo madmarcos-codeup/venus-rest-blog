@@ -33,68 +33,54 @@ public class PostsController {
 
     @GetMapping("/{id}")
     public Optional<Post> fetchPostById(@PathVariable long id) {
-        return postsRepository.findById(id);
+        Optional<Post> optionalPost = postsRepository.findById(id);
+        if(optionalPost.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post id " + id + " not found");
+        }
+        return optionalPost;
     }
 
     @PostMapping("")
     public void createPost(@RequestBody Post newPost) {
 
-        // use a fake author for the post
+        // use docrob as author by default
         User author = usersRepository.findById(1L).get();
         newPost.setAuthor(author);
+        newPost.setCategories(new ArrayList<>());
 
+        // use first 2 categories for the post by default
         Category cat1 = categoriesRepository.findById(1L).get();
         Category cat2 = categoriesRepository.findById(2L).get();
-        newPost.setCategories(new ArrayList<>());
+
         newPost.getCategories().add(cat1);
         newPost.getCategories().add(cat2);
-//
-//        // make some fake categories and throw them in the new post
-//        Category cat1 = new Category(1L, "bunnies", null);
-//        Category cat2 = new Category(2L, "margaritas", null);
-//        newPost.setCategories(new ArrayList<>());
-//        newPost.getCategories().add(cat1);
-//        newPost.getCategories().add(cat2);
 
         postsRepository.save(newPost);
     }
 
     @DeleteMapping("/{id}")
     public void deletePostById(@PathVariable long id) {
+        Optional<Post> optionalPost = postsRepository.findById(id);
+        if(optionalPost.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post id " + id + " not found");
+        }
         postsRepository.deleteById(id);
-        // what to do if we don't find it
-//        throw new RuntimeException("Post not found");
     }
 
     @PutMapping("/{id}")
     public void updatePost(@RequestBody Post updatedPost, @PathVariable long id) {
-        // in case id is not in the request body (i.e., updatedPost), set it
-        // with the path variable id
-        updatedPost.setId(id);
-
         Optional<Post> originalPost = postsRepository.findById(id);
         if(originalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post " + id + " not found");
         }
+
+        // in case id is not in the request body (i.e., updatedPost), set it
+        // with the path variable id
+        updatedPost.setId(id);
+
         // copy any new field values FROM updatedPost TO originalPost
         BeanUtils.copyProperties(updatedPost, originalPost.get(), FieldHelper.getNullPropertyNames(updatedPost));
 
         postsRepository.save(originalPost.get());
-
-//        // find the post to update in the posts list
-//
-//        Post post = findPostById(id);
-//        if(post == null) {
-//            System.out.println("Post not found");
-//        } else {
-//            if(updatedPost.getTitle() != null) {
-//                post.setTitle(updatedPost.getTitle());
-//            }
-//            if(updatedPost.getContent() != null) {
-//                post.setContent(updatedPost.getContent());
-//            }
-//            return;
-//        }
-//        throw new RuntimeException("Post not found");
     }
 }

@@ -1,5 +1,6 @@
 package docrob.venusrestblog.controller;
 
+import docrob.venusrestblog.data.Post;
 import docrob.venusrestblog.data.User;
 import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.UsersRepository;
@@ -26,11 +27,11 @@ public class UsersController {
 
     @GetMapping("/{id}")
     public Optional<User> fetchUserById(@PathVariable long id) {
-        Optional<User> user = usersRepository.findById(id);
-        if(user.isEmpty()) {
+        Optional<User> optionalUser = usersRepository.findById(id);
+        if(optionalUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + id + " not found");
         }
-        return user;
+        return optionalUser;
     }
 
     @GetMapping("/me")
@@ -55,6 +56,8 @@ public class UsersController {
 
     @PostMapping("/create")
     public void createUser(@RequestBody User newUser) {
+        // TODO: validate new user fields
+
         // don't need the below line at this point but just for kicks
         newUser.setCreatedAt(LocalDate.now());
         usersRepository.save(newUser);
@@ -62,19 +65,21 @@ public class UsersController {
 
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable long id) {
+        Optional<User> optionalUser = usersRepository.findById(id);
+        if(optionalUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + id + " not found");
+        }
         usersRepository.deleteById(id);
     }
 
     @PutMapping("/{id}")
     public void updateUser(@RequestBody User updatedUser, @PathVariable long id) {
-        // get the original record from the db
-        Optional<User> userOptional = usersRepository.findById(id);
-        // return 404 if user not found
-        if(userOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id " + id + " not found");
+        Optional<User> optionalUser = usersRepository.findById(id);
+        if(optionalUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + id + " not found");
         }
         // get the user from the optional so we no longer have to deal with the optional
-        User originalUser = userOptional.get();
+        User originalUser = optionalUser.get();
 
         // merge the changed data in updatedUser with originalUser
         BeanUtils.copyProperties(updatedUser, originalUser, FieldHelper.getNullPropertyNames(updatedUser));
@@ -87,10 +92,12 @@ public class UsersController {
 
     @PutMapping("/{id}/updatePassword")
     private void updatePassword(@PathVariable Long id, @RequestParam(required = false) String oldPassword, @RequestParam String newPassword) {
-        User user = usersRepository.findById(id).get();
-//        if(user == null) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id " + id + " not found");
-//        }
+        Optional<User> optionalUser = usersRepository.findById(id);
+        if(optionalUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + id + " not found");
+        }
+
+        User user = optionalUser.get();
 
         // compare old password with saved pw
         if(!user.getPassword().equals(oldPassword)) {

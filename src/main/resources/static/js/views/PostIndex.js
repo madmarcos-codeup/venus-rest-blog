@@ -59,7 +59,7 @@ function generatePostsHTML(posts) {
         }
         let authorName = "";
         if(post.author) {
-            authorName = post.author.name;
+            authorName = post.author.userName;
         }
         postsHTML += `<tr>
             <td>${post.title}</td>
