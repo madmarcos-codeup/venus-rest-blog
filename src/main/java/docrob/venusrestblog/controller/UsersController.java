@@ -2,11 +2,13 @@ package docrob.venusrestblog.controller;
 
 import docrob.venusrestblog.data.Post;
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.data.UserRole;
 import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,6 +20,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/users", produces = "application/json")
 public class UsersController {
+    private final PasswordEncoder passwordEncoder;
     private UsersRepository usersRepository;
 
     @GetMapping("")
@@ -60,6 +63,12 @@ public class UsersController {
 
         // don't need the below line at this point but just for kicks
         newUser.setCreatedAt(LocalDate.now());
+        newUser.setRole(UserRole.USER);
+
+        String plainTextPassword = newUser.getPassword();
+        String encryptedPassword = passwordEncoder.encode(plainTextPassword);
+        newUser.setPassword(encryptedPassword);
+
         usersRepository.save(newUser);
     }
 
