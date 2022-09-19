@@ -1,6 +1,7 @@
 package docrob.venusrestblog.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import docrob.venusrestblog.dto.UserFetchDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -9,6 +10,16 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Collection;
+
+
+//@NamedNativeQuery(name = "User.fetchUserDTOs",
+//        query = "SELECT id, user_name, email FROM users",
+//        resultSetMapping = "Mapping.UserFetchDTO")
+//@SqlResultSetMapping(name = "Mapping.UserFetchDTO",
+//        classes = @ConstructorResult(targetClass = UserFetchDTO.class,
+//                columns = {@ColumnResult(name = "id"),
+//                        @ColumnResult(name = "user_name"),
+//                        @ColumnResult(name = "email")}))
 
 @Getter
 @Setter

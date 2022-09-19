@@ -24,6 +24,7 @@ public class UsersController {
 
     @GetMapping("")
     public List<UserFetchDTO> fetchUsers() {
+//        return usersRepository.fetchUserDTOs();
         List<User> users = usersRepository.findAll();
         List<UserFetchDTO> userDTOs = new ArrayList<>();
 
