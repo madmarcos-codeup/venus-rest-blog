@@ -8,6 +8,7 @@ import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.CategoriesRepository;
 import docrob.venusrestblog.repository.PostsRepository;
 import docrob.venusrestblog.repository.UsersRepository;
+import docrob.venusrestblog.service.EmailService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/posts", produces = "application/json")
 public class PostsController {
+    private EmailService emailService;
     private PostsRepository postsRepository;
     private UsersRepository usersRepository;
     private CategoriesRepository categoriesRepository;
@@ -44,7 +46,7 @@ public class PostsController {
     public void createPost(@RequestBody Post newPost) {
 
         // use docrob as author by default
-        User author = usersRepository.findById(1L).get();
+        User author = usersRepository.findById(8L).get();
         newPost.setAuthor(author);
         newPost.setCategories(new ArrayList<>());
 
@@ -56,6 +58,8 @@ public class PostsController {
         newPost.getCategories().add(cat2);
 
         postsRepository.save(newPost);
+
+        emailService.prepareAndSend(newPost, "Hey man you made a post", "See subject");
     }
 
     @DeleteMapping("/{id}")

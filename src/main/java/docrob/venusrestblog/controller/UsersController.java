@@ -2,6 +2,7 @@ package docrob.venusrestblog.controller;
 
 import docrob.venusrestblog.data.Post;
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.dto.UserFetchDTO;
 import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.UsersRepository;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +23,19 @@ public class UsersController {
     private UsersRepository usersRepository;
 
     @GetMapping("")
-    public List<User> fetchUsers() {
-        return usersRepository.findAll();
+    public List<UserFetchDTO> fetchUsers() {
+        List<User> users = usersRepository.findAll();
+        List<UserFetchDTO> userDTOs = new ArrayList<>();
+
+        for(User user : users) {
+            UserFetchDTO userDTO = new UserFetchDTO();
+            userDTO.setId(user.getId());
+            userDTO.setUserName(user.getUserName());
+            userDTO.setEmail(user.getEmail());
+            userDTOs.add(userDTO);
+        }
+
+        return userDTOs;
     }
 
     @GetMapping("/{id}")
