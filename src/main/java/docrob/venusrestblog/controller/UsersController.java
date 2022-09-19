@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -38,24 +39,12 @@ public class UsersController {
     }
 
     @GetMapping("/me")
-    private Optional<User> fetchMe() {
-        return usersRepository.findById(1L);
+    private User fetchMe(OAuth2Authentication auth) {
+        String userName = auth.getName();
+        User me = usersRepository.findByUserName(userName);
+
+        return me;
     }
-
-//    @GetMapping("/username/{userName}")
-//    private User fetchByUserName(@PathVariable String userName) {
-//
-//    }
-
-//    @GetMapping("/email/{email}")
-//    private User fetchByEmail(@PathVariable String email) {
-//        User user = findUserByEmail(email);
-//        if(user == null) {
-//            // what to do if we don't find it
-//            throw new RuntimeException("I don't know what I am doing");
-//        }
-//        return user;
-//    }
 
     @PostMapping("/create")
     public void createUser(@RequestBody User newUser) {

@@ -4,6 +4,7 @@ import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.data.UserRole;
 import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.CategoriesRepository;
 import docrob.venusrestblog.repository.PostsRepository;
@@ -11,6 +12,8 @@ import docrob.venusrestblog.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,10 +44,18 @@ public class PostsController {
     }
 
     @PostMapping("")
-    public void createPost(@RequestBody Post newPost) {
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
+    public void createPost(@RequestBody Post newPost, OAuth2Authentication auth) {
+        if(newPost.getTitle() == null || newPost.getTitle().length() < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title cannot be blank");
+        }
+        if(newPost.getContent() == null || newPost.getContent().length() < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content cannot be blank");
+        }
 
-        // use docrob as author by default
-        User author = usersRepository.findById(1L).get();
+        String userName = auth.getName();
+        User author = usersRepository.findByUserName(userName);
+
         newPost.setAuthor(author);
         newPost.setCategories(new ArrayList<>());
 
@@ -59,19 +70,37 @@ public class PostsController {
     }
 
     @DeleteMapping("/{id}")
-    public void deletePostById(@PathVariable long id) {
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
+    public void deletePostById(@PathVariable long id, OAuth2Authentication auth) {
         Optional<Post> optionalPost = postsRepository.findById(id);
         if(optionalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post id " + id + " not found");
         }
+        User author = optionalPost.get().getAuthor();
+
+        String userName = auth.getName();
+        User loggedInUser = usersRepository.findByUserName(userName);
+        if(loggedInUser.getRole() != UserRole.ADMIN && loggedInUser.getId() != author.getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "amscray");
+        }
+
         postsRepository.deleteById(id);
     }
 
     @PutMapping("/{id}")
-    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id) {
-        Optional<Post> originalPost = postsRepository.findById(id);
-        if(originalPost.isEmpty()) {
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
+    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id, OAuth2Authentication auth) {
+        Optional<Post> optionalPost = postsRepository.findById(id);
+        if(optionalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post " + id + " not found");
+        }
+        Post originalPost = optionalPost.get();
+        User author = originalPost.getAuthor();
+
+        String userName = auth.getName();
+        User loggedInUser = usersRepository.findByUserName(userName);
+        if(loggedInUser.getRole() != UserRole.ADMIN && loggedInUser.getId() != author.getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "amscray");
         }
 
         // in case id is not in the request body (i.e., updatedPost), set it
@@ -79,8 +108,8 @@ public class PostsController {
         updatedPost.setId(id);
 
         // copy any new field values FROM updatedPost TO originalPost
-        BeanUtils.copyProperties(updatedPost, originalPost.get(), FieldHelper.getNullPropertyNames(updatedPost));
+        BeanUtils.copyProperties(updatedPost, originalPost, FieldHelper.getNullPropertyNames(updatedPost));
 
-        postsRepository.save(originalPost.get());
+        postsRepository.save(originalPost);
     }
 }

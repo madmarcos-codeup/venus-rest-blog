@@ -46,13 +46,15 @@ function createPostHTML(user) {
         <tbody>
     `;
 
-    // add a row to the table for each user post
-    for (let i = 0; i < user.posts.length; i++) {
-        const post = user.posts[i];
-        html += `<tr>
-            <td>${post.title}</td>
-            <td>${post.content}</td>
-            </tr>`;
+    if(user.posts) {
+        // add a row to the table for each user post
+        for (let i = 0; i < user.posts.length; i++) {
+            const post = user.posts[i];
+            html += `<tr>
+                <td>${post.title}</td>
+                <td>${post.content}</td>
+                </tr>`;
+        }
     }
 
     // finish the table

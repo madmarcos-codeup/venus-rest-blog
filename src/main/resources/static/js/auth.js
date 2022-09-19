@@ -65,3 +65,61 @@ function setTokens(responseData) {
         console.log("Refresh token set")
     }
 }
+
+export function isLoggedIn() {
+    if(localStorage.getItem('access_token')) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+//  returns an object with user_name and authority from the access_token
+export function getUser() {
+    const accessToken = localStorage.getItem("access_token");
+    if(!accessToken) {
+        return false;
+    }
+    const parts = accessToken.split('.');
+    const payload = parts[1];
+    const decodedPayload = atob(payload);
+    const payloadObject = JSON.parse(decodedPayload);
+    const user = {
+        userName: payloadObject.user_name,
+        role: payloadObject.authorities[0]
+    }
+    return user;
+}
+
+export function getUserRole() {
+    const accessToken = localStorage.getItem("access_token");
+    if(!accessToken) {
+        return false;
+    }
+    const parts = accessToken.split('.');
+    const payload = parts[1];
+    const decodedPayload = atob(payload);
+    const payloadObject = JSON.parse(decodedPayload);
+    return payloadObject.authorities[0];
+}
+
+export async function removeStaleTokens() {
+    console.log("Removing stale tokens...");
+
+    // clear tokens from localStorage if backend tells us the tokens are invalid
+    // make the request
+    const request = {
+        method: 'GET',
+        headers: getHeaders()
+    };
+    await fetch(`/api/users/me`, request)
+        .then((response) => {
+            // if fetch error then you might be using stale tokens
+            if (response.status === 401) {
+                window.localStorage.clear();
+            }
+        }).catch(error => {
+            console.log("FETCH ERROR: " + error);
+        });
+}
