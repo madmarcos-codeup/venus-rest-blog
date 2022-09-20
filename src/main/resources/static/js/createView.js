@@ -1,13 +1,15 @@
 import render from './render.js';
 import router from './router.js';
 import fetchData from "./fetchData.js";
-import {getHeaders} from "./auth.js";
+import {getHeaders, removeStaleTokens} from "./auth.js";
 
 /**
  * Finds the correct route for a given view, builds a loading view, fetches data and builds the final rendered view.
  * @param URI
  */
-export default function createView(URI) {
+export default async function createView(URI) {
+    // createView must wait for stale token removal before finishing view creation
+    await removeStaleTokens();
 
     let route = router(URI);
 
@@ -31,7 +33,7 @@ export default function createView(URI) {
         // I tried using route.uri here instead, but it seems there's an off-by-one bug (https://stackoverflow.com/a/38830794)
         document.title = currentTitle;
         // Add the current page to the history stack
-        history.pushState({...props, lastUri: route.uri }, null, route.uri)
+        history.pushState({...props, lastUri: route.uri}, null, route.uri)
         render(props, route);
     });
 }
