@@ -54,6 +54,9 @@ public class UsersController {
 
     @GetMapping("/me")
     private Optional<User> fetchMe(OAuth2Authentication auth) {
+        if(auth ==  null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please login");
+        }
         String userName = auth.getName();
         User user = usersRepository.findByUserName(userName);
         return Optional.of(user);
