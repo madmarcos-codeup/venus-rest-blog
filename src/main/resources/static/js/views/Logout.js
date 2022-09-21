@@ -9,5 +9,5 @@ export function LogoutEvent() {
         window.localStorage.removeItem("access_token");
         window.localStorage.removeItem("refresh_token");
         createView("/login");
-    }, 5000)
+    }, 5)
 }

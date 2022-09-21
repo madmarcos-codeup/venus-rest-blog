@@ -4,6 +4,7 @@ import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.data.UserRole;
 import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.CategoriesRepository;
 import docrob.venusrestblog.repository.PostsRepository;
@@ -74,11 +75,22 @@ public class PostsController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
-    public void deletePostById(@PathVariable long id) {
+    public void deletePostById(@PathVariable long id, OAuth2Authentication auth) {
+        String userName = auth.getName();
+        User loggedInUser = usersRepository.findByUserName(userName);
+
         Optional<Post> optionalPost = postsRepository.findById(id);
         if(optionalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post id " + id + " not found");
         }
+        // grab the original post from the optional and check the logged in user
+        Post originalPost = optionalPost.get();
+
+        // admin can delete anyone's post. author of the post can delete only their posts
+        if(loggedInUser.getRole() != UserRole.ADMIN && originalPost.getAuthor().getId() != loggedInUser.getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not yo post!");
+        }
+
         postsRepository.deleteById(id);
     }
 
