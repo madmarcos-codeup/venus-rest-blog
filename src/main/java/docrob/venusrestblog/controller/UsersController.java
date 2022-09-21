@@ -1,6 +1,5 @@
 package docrob.venusrestblog.controller;
 
-import docrob.venusrestblog.data.Post;
 import docrob.venusrestblog.data.User;
 import docrob.venusrestblog.data.UserRole;
 import docrob.venusrestblog.dto.UserFetchDTO;

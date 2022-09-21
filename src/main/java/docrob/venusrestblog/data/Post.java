@@ -41,5 +41,9 @@ public class Post {
     )
     @JsonIgnoreProperties("posts")
     private Collection<Category> categories;
+
+//    @OneToMany
+//    private Collection<Comment> comments;
+
 }
 

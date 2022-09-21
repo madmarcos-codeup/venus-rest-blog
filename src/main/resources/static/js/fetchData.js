@@ -1,10 +1,11 @@
-
 /**
  * Given an object containing all the required data for a given page, fetch all the needed data and return it as properties to pass to a view.
  * @param state
  * @param request
  * @returns {Promise<{}>}
  */
+import createView from "./createView.js";
+
 export default function fetchData(state, request) {
     const promises = [];
     //TODO: this needs to be moved to a prop file or env variable
@@ -17,6 +18,13 @@ export default function fetchData(state, request) {
         promises.push(
             fetch(baseUri + state[pieceOfState], request)
                 .then(function (res) {
+                    if(res.status === 400 && res.url.includes("oauth/token")) {
+                        // console.log("FAILED LOGIN");
+                        // console.log(res);
+                        createView("/failedlogin");
+                        return;
+                    }
+
                     return res.json();
                 }));
     }

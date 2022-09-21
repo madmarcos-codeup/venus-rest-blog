@@ -9,6 +9,7 @@ import Register from "./views/Register.js"
 import {RegisterEvent} from "./views/Register.js";
 import prepareUserHTML, {prepareUserJS} from "./views/User.js";
 import Logout, {LogoutEvent} from "./views/Logout.js";
+import FailedLogin, {FailedLoginEvent} from "./views/FailedLogin.js";
 
 /**
  * Returns the route object for a specific route based on the given URI
@@ -22,6 +23,13 @@ export default function router(URI) {
             state: {},
             uri: '/',
             title: 'Home',
+        },
+        '/failedlogin': {
+            returnView: FailedLogin,
+            state: {},
+            uri: '/failedlogin',
+            title: "Login Failed",
+            viewEvent: FailedLoginEvent
         },
         '/login': {
             returnView: Login,
