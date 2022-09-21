@@ -96,10 +96,18 @@ public class PostsController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
-    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id) {
-        Optional<Post> originalPost = postsRepository.findById(id);
-        if(originalPost.isEmpty()) {
+    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id, OAuth2Authentication auth) {
+        Optional<Post> optionalPost = postsRepository.findById(id);
+        if(optionalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post " + id + " not found");
+        }
+        Post originalPost = optionalPost.get();
+
+        String userName = auth.getName();
+        User loggedInUser = usersRepository.findByUserName(userName);
+        // admin can update anyone's post. author of the post can update only their posts
+        if(loggedInUser.getRole() != UserRole.ADMIN && originalPost.getAuthor().getId() != loggedInUser.getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not yo post!");
         }
 
         // in case id is not in the request body (i.e., updatedPost), set it
@@ -107,8 +115,8 @@ public class PostsController {
         updatedPost.setId(id);
 
         // copy any new field values FROM updatedPost TO originalPost
-        BeanUtils.copyProperties(updatedPost, originalPost.get(), FieldHelper.getNullPropertyNames(updatedPost));
+        BeanUtils.copyProperties(updatedPost, originalPost, FieldHelper.getNullPropertyNames(updatedPost));
 
-        postsRepository.save(originalPost.get());
+        postsRepository.save(originalPost);
     }
 }
