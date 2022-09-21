@@ -20,6 +20,14 @@ function loadViewOnPageRequest() {
  */
 function addListenerToNavLinks() {
     document.addEventListener('click', e => {
+        // we want checkboxes and labels to keep their default behavior when clicked
+        // and not prevent the default
+        if(e.target.type && e.target.type === "checkbox") {
+            return;
+        }
+        if(e.target.matches('label')) {
+            return;
+        }
         e.preventDefault();
         if (e.target.dataset['link'] !== undefined) {
             const URI = e.target.href.substring(location.origin.length);

@@ -1,13 +1,21 @@
 import CreateView from "../createView.js";
-import {getHeaders} from "../auth.js";
-import {showNotification} from "../messaging.js";
+import {getHeaders, getUser, isLoggedIn} from "../auth.js";
+// import {showNotification} from "../messaging.js";
 
 let posts;
+let loggedInUser;
+let categories;
 
 export default function PostIndex(props) {
+    // refresh the currently logged in user
+    loggedInUser = getUser();
+
     const postsHTML = generatePostsHTML(props.posts);
     // save this for loading edits later
     posts = props.posts;
+    categories = props.categories;
+
+    const addPostHTML = generateAddPostHTML();
 
     return `
         <header>
@@ -19,7 +27,22 @@ export default function PostIndex(props) {
                 ${postsHTML}   
             </div>
             
-            <h3>Add a post</h3>
+            ${addPostHTML}
+            
+        </main>
+    `;
+}
+
+function generateAddPostHTML() {
+    let addHTML = ``;
+
+    if(!isLoggedIn()) {
+        return addHTML;
+    }
+
+    const categoryHTML = generateCategoryHTML(categories);
+
+    addHTML = `<h3>Add a post</h3>
             <form>
                 <div>
                     <label for="title">Title</label><br>
@@ -34,7 +57,7 @@ export default function PostIndex(props) {
                 
                 <div>
                     <label for="content">Content</label><br>
-                    <textarea id="content" class="form-control" name="content" rows="10" cols="50" placeholder="Enter content"></textarea>
+                    <textarea id="content" class="form-control" name="content" rows="5" cols="50" placeholder="Enter content"></textarea>
                     <div class="invalid-feedback">
                         Content cannot be blank.
                     </div>
@@ -43,11 +66,29 @@ export default function PostIndex(props) {
                     </div>
                 </div>
                 
-                <button data-id="0" id="savePost" name="savePost" class="button btn-primary">Save Post</button>
-            </form>
-            
-        </main>
-    `;
+                <h6 class="my-category-group">Categories</h6>
+                ${categoryHTML}
+                
+                <button data-id="0" id="savePost" name="savePost" type="button" class="my-button button btn-primary">Save Post</button>
+            </form>`;
+
+    return addHTML;
+}
+
+function generateCategoryHTML(categories) {
+    let catHTML = ``;
+    for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+
+        catHTML += `
+            <div class="form-check">
+                <input class="form-check-input category-checkbox" type="checkbox" value="" data-id="${category.id}" id="category_${category.id}">
+                <label class="form-check-label" for="flexCheckDefault">
+                    ${category.name}
+                </label>
+            </div>`;
+    }
+    return catHTML;
 }
 
 function generatePostsHTML(posts) {
@@ -83,10 +124,18 @@ function generatePostsHTML(posts) {
             <td>${post.title}</td>
             <td>${post.content}</td>
             <td>${categories}</td>
-            <td>${authorName}</td>
-            <td><button data-id=${post.id} class="button btn-primary editPost">Edit</button></td>
-            <td><button data-id=${post.id} class="button btn-danger deletePost">Delete</button></td>
-            </tr>`;
+            <td>${authorName}</td>`;
+
+        // only admins and the author of the post can edit/delete it
+        if(loggedInUser) {
+            if (loggedInUser.role === 'ADMIN' || loggedInUser.userName === post.author.userName) {
+                postsHTML += `<td><button data-id=${post.id} class="row-button button btn-primary editPost">Edit</button></td>
+                <td><button data-id=${post.id} class="row-button button btn-danger deletePost">Delete</button></td>`;
+            } else {
+                postsHTML += `<td></td><td></td>`;
+            }
+        }
+        postsHTML += `</tr>`;
     }
     postsHTML += `</tbody></table>`;
     return postsHTML;
@@ -163,6 +212,21 @@ function loadPostIntoForm(postId) {
     const contentField = document.querySelector("#content");
     titleField.value = post.title;
     contentField.value = post.content;
+
+    // load the post's categories
+    const checkboxes = document.querySelectorAll(".category-checkbox");
+    for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = false;
+        if(post.categories) {
+            for (let j = 0; j < post.categories.length; j++) {
+                if(parseInt(checkboxes[i].getAttribute("data-id")) === post.categories[j].id) {
+                    checkboxes[i].checked = true;
+                }
+            }
+        }
+    }
+
+    validateFields();
 
     const saveButton = document.querySelector("#savePost");
     saveButton.setAttribute("data-id", postId);
@@ -251,9 +315,11 @@ function savePost(postId) {
     //     return;
     // }
     // make the new/updated post object
+    const selectedCategories = getSelectedCategories();
     const post = {
         title: titleField.value,
-        content: contentField.value
+        content: contentField.value,
+        categories: selectedCategories
     }
 
     // make the request
@@ -279,4 +345,21 @@ function savePost(postId) {
             }
             CreateView("/posts");
         })
+}
+
+function getSelectedCategories() {
+    let cats = [];
+    const checkboxes = document.querySelectorAll(".category-checkbox");
+
+    for (let i = 0; i < checkboxes.length; i++) {
+        const checkbox = checkboxes[i];
+        if(checkbox.checked) {
+            const id = checkbox.getAttribute("data-id");
+            const cat = {
+                id
+            }
+            cats.push(cat);
+        }
+    }
+    return cats;
 }

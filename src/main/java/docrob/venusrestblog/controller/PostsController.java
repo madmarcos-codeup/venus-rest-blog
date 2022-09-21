@@ -59,15 +59,6 @@ public class PostsController {
         User author = usersRepository.findByUserName(userName);
         newPost.setAuthor(author);
 
-        newPost.setCategories(new ArrayList<>());
-
-        // use first 2 categories for the post by default
-        Category cat1 = categoriesRepository.findById(1L).get();
-        Category cat2 = categoriesRepository.findById(2L).get();
-
-        newPost.getCategories().add(cat1);
-        newPost.getCategories().add(cat2);
-
         postsRepository.save(newPost);
 
         emailService.prepareAndSend(newPost, "Hey man you made a post", "See subject");
