@@ -12,6 +12,7 @@ import docrob.venusrestblog.service.EmailService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -44,6 +45,7 @@ public class PostsController {
     }
 
     @PostMapping("")
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
     public void createPost(@RequestBody Post newPost, OAuth2Authentication auth) {
         String userName = auth.getName();
         User author = usersRepository.findByUserName(userName);
@@ -64,6 +66,7 @@ public class PostsController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
     public void deletePostById(@PathVariable long id) {
         Optional<Post> optionalPost = postsRepository.findById(id);
         if(optionalPost.isEmpty()) {
@@ -73,6 +76,7 @@ public class PostsController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
     public void updatePost(@RequestBody Post updatedPost, @PathVariable long id) {
         Optional<Post> originalPost = postsRepository.findById(id);
         if(originalPost.isEmpty()) {
