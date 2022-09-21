@@ -6,6 +6,7 @@ import docrob.venusrestblog.data.UserRole;
 import docrob.venusrestblog.dto.UserFetchDTO;
 import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.UsersRepository;
+import docrob.venusrestblog.service.S3Service;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import java.util.Optional;
 public class UsersController {
     private UsersRepository usersRepository;
     private PasswordEncoder passwordEncoder;
+    private S3Service s3Service;
 
     @GetMapping("")
     public List<UserFetchDTO> fetchUsers() {
@@ -59,6 +61,8 @@ public class UsersController {
         }
         String userName = auth.getName();
         User user = usersRepository.findByUserName(userName);
+        user.setPhotourl(s3Service.getSignedURL(user.getPhotoFileName()));
+
         return Optional.of(user);
     }
 

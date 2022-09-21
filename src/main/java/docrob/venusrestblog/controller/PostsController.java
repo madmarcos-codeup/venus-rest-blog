@@ -47,6 +47,13 @@ public class PostsController {
     @PostMapping("")
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
     public void createPost(@RequestBody Post newPost, OAuth2Authentication auth) {
+        if(newPost.getTitle() == null || newPost.getTitle().length() < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title cannot be blank!");
+        }
+        if(newPost.getContent() == null || newPost.getContent().length() < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content cannot be blank!");
+        }
+
         String userName = auth.getName();
         User author = usersRepository.findByUserName(userName);
         newPost.setAuthor(author);

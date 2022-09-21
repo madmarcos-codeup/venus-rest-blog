@@ -1,0 +1,21 @@
+/*#notification-box {*/
+/*    !*position: fixed;*!*/
+/*    !*top: -100px;*!*/
+/*    !*left: 10px;*!*/
+/*    !*z-index: 1000;*!*/
+/*    height: 0;*/
+/*}*/
+
+/*.visible {*/
+/*    animation: movein 2s ease forwards, moveout 2s 5s ease forwards;*/
+/*}*/
+
+/*@keyframes movein {*/
+/*    from { height: 0; }*/
+/*    to   { height: 50px; }*/
+/*}*/
+
+/*@keyframes moveout {*/
+/*    from { height: 50px; }*/
+/*    to   { height: 0; }*/
+/*}*/

@@ -6,12 +6,14 @@ export default function prepareUserHTML(props) {
 
     const userPostHTML = createPostHTML(me);
 
+    console.log(me);
+
     // make the user's original pw available somewhere in here
     return `
         <h1>User Info</h1>
         <h2>${props.me.userName}</h2>
         <h2>${props.me.email}</h2>
-        
+        <img alt="my photo" src="${props.me.photoUrl}">
         <form>
             <label for="oldpassword">Please enter your current password</label>
             <input type="password" id="oldpassword" name="oldpassword">

@@ -58,11 +58,11 @@ public class User {
     private Collection<Post> posts;
 
     // the below properties are only for the S3 service
-//    @Column(name = "photo_filename")
-//    @ToString.Exclude
-//    private String photoFileName;
-//
-//    @Transient
-//    private String photourl;
+    @Column(name = "photo_filename")
+    @ToString.Exclude
+    private String photoFileName;
+
+    @Transient
+    private String photourl;
 
 }

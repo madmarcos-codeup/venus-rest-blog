@@ -21,12 +21,28 @@ export default function PostIndex(props) {
             
             <h3>Add a post</h3>
             <form>
-                <label for="title">Title</label><br>
-                <input id="title" name="title" type="text" placeholder="Enter title">
-                <br>
-                <label for="content">Content</label><br>
-                <textarea id="content" name="content" rows="10" cols="50" placeholder="Enter content"></textarea>
-                <br>
+                <div>
+                    <label for="title">Title</label><br>
+                    <input id="title" name="title" class="form-control" type="text" placeholder="Enter title">
+                    <div class="invalid-feedback">
+                        Title cannot be blank.
+                    </div>
+                    <div class="valid-feedback">
+                        Your title is ok!
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="content">Content</label><br>
+                    <textarea id="content" class="form-control" name="content" rows="10" cols="50" placeholder="Enter content"></textarea>
+                    <div class="invalid-feedback">
+                        Content cannot be blank.
+                    </div>
+                    <div class="valid-feedback">
+                        Content is ok!
+                    </div>
+                </div>
+                
                 <button data-id="0" id="savePost" name="savePost" class="button btn-primary">Save Post</button>
             </form>
             
@@ -83,6 +99,40 @@ export function postSetup() {
     setupSaveHandler();
     setupEditHandlers();
     setupDeleteHandlers();
+    setupValidationHandlers();
+    validateFields();
+}
+
+function setupValidationHandlers() {
+    let input = document.querySelector("#title");
+    input.addEventListener("keyup", validateFields);
+    input = document.querySelector("#content");
+    input.addEventListener("keyup", validateFields);
+}
+
+function validateFields() {
+    let isValid = true;
+    let input = document.querySelector("#title");
+    if(input.value.trim().length < 1) {
+        input.classList.add("is-invalid");
+        input.classList.remove("is-valid");
+        isValid = false;
+    } else {
+        input.classList.add("is-valid");
+        input.classList.remove("is-invalid");
+    }
+
+    input = document.querySelector("#content");
+    if(input.value.trim().length < 1) {
+        input.classList.add("is-invalid");
+        input.classList.remove("is-valid");
+        isValid = false;
+    } else {
+        input.classList.add("is-valid");
+        input.classList.remove("is-invalid");
+    }
+
+    return isValid;
 }
 
 function setupEditHandlers() {
@@ -185,14 +235,21 @@ function savePost(postId) {
     const titleField = document.querySelector("#title");
     const contentField = document.querySelector("#content");
 
-    if(titleField.value.trim().length < 1) {
-        showNotification("Title cannot be blank!", "warning");
+    // don't allow save if title or content are invalid
+    if(!validateFields()) {
         return;
     }
-    if(contentField.value.trim().length < 1) {
-        showNotification("Content cannot be blank!", "warning");
-        return;
-    }
+
+    // don't need this anymore since I am now using bootstrap validation
+
+    // if(titleField.value.trim().length < 1) {
+    //     showNotification("Title cannot be blank!", "warning");
+    //     return;
+    // }
+    // if(contentField.value.trim().length < 1) {
+    //     showNotification("Content cannot be blank!", "warning");
+    //     return;
+    // }
     // make the new/updated post object
     const post = {
         title: titleField.value,
