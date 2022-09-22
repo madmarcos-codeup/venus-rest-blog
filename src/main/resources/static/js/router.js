@@ -8,6 +8,8 @@ import LoginEvent from "./auth.js";
 import Register from "./views/Register.js"
 import {RegisterEvent} from "./views/Register.js";
 import prepareUserHTML, {prepareUserJS} from "./views/User.js";
+import LoginGoogle, {LoginGoogleEvent} from "./views/LoginGoogle.js";
+import DoLogin, {DoLoginEvents} from "./views/DoLogin.js";
 
 /**
  * Returns the route object for a specific route based on the given URI
@@ -28,6 +30,20 @@ export default function router(URI) {
             uri: '/login',
             title: "Login",
             viewEvent: LoginEvent
+        },
+        '/dologin': {
+            returnView: DoLogin,
+            state: {},
+            uri: '/dologin',
+            title: "DoLogin",
+            viewEvent: DoLoginEvents
+        },
+        '/logingoogle': {
+            returnView: LoginGoogle,
+            state: {},
+            uri: '/logingoogle',
+            title: "Login via Google",
+            viewEvent: LoginGoogleEvent
         },
         '/register': {
             returnView: Register,

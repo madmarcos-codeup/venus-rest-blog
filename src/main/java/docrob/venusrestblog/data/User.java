@@ -46,4 +46,7 @@ public class User {
     @JsonIgnoreProperties("author")
     private Collection<Post> posts;
 
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
+
 }
