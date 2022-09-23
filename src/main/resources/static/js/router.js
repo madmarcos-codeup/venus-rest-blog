@@ -31,10 +31,10 @@ export default function router(URI) {
             title: "Login",
             viewEvent: LoginEvent
         },
-        '/dologin': {
+        '/loginSuccess': {
             returnView: DoLogin,
             state: {},
-            uri: '/dologin',
+            uri: '/loginSuccess',
             title: "DoLogin",
             viewEvent: DoLoginEvents
         },
