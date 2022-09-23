@@ -2,10 +2,13 @@ package docrob.venusrestblog.controller;
 
 import docrob.venusrestblog.data.Post;
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.data.UserAuthInfoDTO;
 import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.UsersRepository;
+import docrob.venusrestblog.security.AccessFunctions;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,6 +36,37 @@ public class UsersController {
         }
         return optionalUser;
     }
+
+    @GetMapping("/authinfo")
+    private UserAuthInfoDTO getUserAuthInfo(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
+        if(authHeader == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+        // grab access token
+        String accessToken = AccessFunctions.getAccessTokenFromHeader(authHeader);
+        if(accessToken == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+        // assume google auth. get email from google via the access token
+        String email = AccessFunctions.getEmailFromToken(accessToken);
+        if(email == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+        User user = usersRepository.findByEmail(email);
+        if(user == null) {
+            System.out.println("User not found: " + email);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+        // use email to lookup the user's info
+        UserAuthInfoDTO userDTO = new UserAuthInfoDTO();
+        userDTO.setEmail(email);
+        userDTO.setRole(user.getRole());
+        userDTO.setUserName(user.getUserName());
+        return userDTO;
+    }
+
 
     @GetMapping("/me")
     private Optional<User> fetchMe() {

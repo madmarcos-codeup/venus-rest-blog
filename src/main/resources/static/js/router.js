@@ -3,13 +3,12 @@ import PostIndex, {postSetup} from "./views/PostIndex.js";
 import About from "./views/About.js";
 import Error404 from "./views/Error404.js";
 import Loading from "./views/Loading.js";
-import Login from "./views/Login.js";
-import LoginEvent from "./auth.js";
+import Login, {LoginEvent} from "./views/Login.js";
 import Register from "./views/Register.js"
 import {RegisterEvent} from "./views/Register.js";
 import prepareUserHTML, {prepareUserJS} from "./views/User.js";
-import LoginGoogle, {LoginGoogleEvent} from "./views/LoginGoogle.js";
 import DoLogin, {DoLoginEvents} from "./views/DoLogin.js";
+import Logout, {LogoutEvent} from "./views/Logout.js";
 
 /**
  * Returns the route object for a specific route based on the given URI
@@ -24,26 +23,26 @@ export default function router(URI) {
             uri: '/',
             title: 'Home',
         },
+        '/dologin': {
+            returnView: DoLogin,
+            state: {},
+            uri: '/dologin',
+            title: "DoLogin",
+            viewEvent: DoLoginEvents
+        },
         '/login': {
             returnView: Login,
             state: {},
             uri: '/login',
-            title: "Login",
+            title: "Login via Google",
             viewEvent: LoginEvent
         },
-        '/loginSuccess': {
-            returnView: DoLogin,
+        '/logout': {
+            returnView: Logout,
             state: {},
-            uri: '/loginSuccess',
-            title: "DoLogin",
-            viewEvent: DoLoginEvents
-        },
-        '/logingoogle': {
-            returnView: LoginGoogle,
-            state: {},
-            uri: '/logingoogle',
-            title: "Login via Google",
-            viewEvent: LoginGoogleEvent
+            uri: '/logout',
+            title: "Logout",
+            viewEvent: LogoutEvent
         },
         '/register': {
             returnView: Register,

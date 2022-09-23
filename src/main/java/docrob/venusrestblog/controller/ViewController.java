@@ -1,51 +1,23 @@
 package docrob.venusrestblog.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Arrays;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public class ViewController {
-    @Autowired
-    private OAuth2AuthorizedClientService authorizedClientService;
-
-    @GetMapping("/loginSuccess")
-    public String getLoginInfo(HttpServletRequest request, Model model, OAuth2AuthenticationToken authentication) {
-        OAuth2AuthorizedClient client = authorizedClientService
-                .loadAuthorizedClient(
-                        authentication.getAuthorizedClientRegistrationId(),
-                        authentication.getName());
-
-        if(client.getAccessToken() != null) {
-            System.out.println("Have an access token: " + client.getAccessToken().getTokenValue());
-            request.setAttribute("access_token", client.getAccessToken().getTokenValue());
-        }
-        if(client.getRefreshToken() != null) {
-            System.out.println("Have an refresh token");
-            request.setAttribute("refresh_token", client.getRefreshToken().getTokenValue());
-        }
-        return "forward:/ddd.html";
+    @GetMapping(value="dologin")
+    public RedirectView oauthRedirect(RedirectAttributes attributes) {
+    //http://localhost:8081/dologin#state=pass-through%20value&access_token=ya29.a0Aa4xrXPfpUa2mRv4JXSP6f8qHeVeA4fJN41O77KarS6SpLzLUstb5sKm4cJXuWBmY4eVDmqqwvX2xybM6NGan_mYHkv3cF8llpZpDnlXEJrW6k29fEWXvNbvZmWAYJd84bn-OvHblwoyU79YcApK_7dCjfjNhAaCgYKATASAQ4SFQEjDvL9ZmxxCFXg3pfZxnllIPqp8w0165&token_type=Bearer&expires_in=3599&scope=email%20profile%20openid%20https://www.googleapis.com/auth/classroom.rosters.readonly%20https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/classroom.student-submissions.students.readonly%20https://www.googleapis.com/auth/classroom.courses.readonly%20https://www.googleapis.com/auth/drive.metadata.readonly%20https://www.googleapis.com/auth/userinfo.email&authuser=1&hd=codeup.com&prompt=none
+        System.out.println("oauthRedirect called");
+//        return "forward:/index.html";
+        return new RedirectView("index.html");
     }
 
-    @RequestMapping({"/", "/about", "/login", "doLogin", "/logingoogle", "/home", "/posts", "/register", "/me"})
-    public String showView(HttpServletRequest request) {
-        // @RequestParam(name = "access_token", required = false) String accessToken
-//        System.out.println(request.getRequestURI());
-//        System.out.println(request.getQueryString());
-//        System.out.println(Arrays.toString(request.getParameterMap().entrySet().toArray()));
-//        if(accessToken != null && accessToken.length() > 0)
-//            System.out.println(accessToken);
+    @RequestMapping({"/", "/about", "/login", "/logout", "/home", "/posts", "/register", "/me"})
+    public String showView() {
         return "forward:/index.html";
     }
 }
