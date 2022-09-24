@@ -69,8 +69,29 @@ public class UsersController {
 
 
     @GetMapping("/me")
-    private Optional<User> fetchMe() {
-        return usersRepository.findById(1L);
+    private User fetchMe(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
+        if(authHeader == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+        // grab access token
+        String accessToken = AccessFunctions.getAccessTokenFromHeader(authHeader);
+        if(accessToken == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+        // assume google auth. get email from google via the access token
+        String email = AccessFunctions.getEmailFromToken(accessToken);
+        if(email == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+        User user = usersRepository.findByEmail(email);
+        if(user == null) {
+            System.out.println("User not found: " + email);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+        return user;
     }
 
 //    @GetMapping("/username/{userName}")

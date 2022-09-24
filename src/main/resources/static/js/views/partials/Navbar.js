@@ -1,5 +1,7 @@
+import {getUser, isLoggedIn} from "../../auth.js";
+
 export default function Navbar(props) {
-    return `
+    let nav = `
         <nav>
             <a href="/" data-link class="my-link">Home</a>
             <a href="/posts" data-link class="my-link">Posts</a>
@@ -10,7 +12,19 @@ export default function Navbar(props) {
 
             <a href="/register" data-link class="my-link">Register</a>
             <a href="/me" data-link class="my-link">About ME</a>
-        </nav>
-    `;
+            `;
+
+    let loginName = "Not logged in";
+    if(isLoggedIn()) {
+        const loggedInUser = getUser();
+        if(loggedInUser) {
+            loginName = "Logged in as " + loggedInUser.userName;
+        }
+    }
+    nav += `
+        <span id="login-name">${loginName}</span>`;
+
+    nav += `</nav>`;
+    return nav;
 //                <a href="/oauth2/authorization/google" data-link class="my-bypass my-link">Login via Google</a>
 }
