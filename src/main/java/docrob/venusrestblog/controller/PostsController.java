@@ -8,8 +8,10 @@ import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.CategoriesRepository;
 import docrob.venusrestblog.repository.PostsRepository;
 import docrob.venusrestblog.repository.UsersRepository;
+import docrob.venusrestblog.service.AuthBuddy;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +27,8 @@ public class PostsController {
     private PostsRepository postsRepository;
     private UsersRepository usersRepository;
     private CategoriesRepository categoriesRepository;
+
+    private AuthBuddy authBuddy;
 
     @GetMapping("")
     public List<Post> fetchPosts() {
@@ -68,7 +72,9 @@ public class PostsController {
     }
 
     @PutMapping("/{id}")
-    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id) {
+    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
+        User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
+
         Optional<Post> originalPost = postsRepository.findById(id);
         if(originalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post " + id + " not found");
