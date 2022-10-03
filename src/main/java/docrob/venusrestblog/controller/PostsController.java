@@ -4,6 +4,7 @@ import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.data.UserRole;
 import docrob.venusrestblog.misc.FieldHelper;
 import docrob.venusrestblog.repository.CategoriesRepository;
 import docrob.venusrestblog.repository.PostsRepository;
@@ -45,39 +46,50 @@ public class PostsController {
     }
 
     @PostMapping("")
-    public void createPost(@RequestBody Post newPost) {
+    public void createPost(@RequestBody Post newPost, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
+        User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
+        if(loggedInUser != null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
 
-        // use docrob as author by default
-        User author = usersRepository.findById(1L).get();
-        newPost.setAuthor(author);
-        newPost.setCategories(new ArrayList<>());
-
-        // use first 2 categories for the post by default
-        Category cat1 = categoriesRepository.findById(1L).get();
-        Category cat2 = categoriesRepository.findById(2L).get();
-
-        newPost.getCategories().add(cat1);
-        newPost.getCategories().add(cat2);
+        newPost.setAuthor(loggedInUser);
 
         postsRepository.save(newPost);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePostById(@PathVariable long id) {
+    public void deletePostById(@PathVariable long id, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
+        User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
+        if(loggedInUser != null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
         Optional<Post> optionalPost = postsRepository.findById(id);
         if(optionalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post id " + id + " not found");
         }
+        Post originalPost = optionalPost.get();
+        if(loggedInUser.getRole() != UserRole.ADMIN || loggedInUser.getId() != originalPost.getAuthor().getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
         postsRepository.deleteById(id);
     }
 
     @PutMapping("/{id}")
     public void updatePost(@RequestBody Post updatedPost, @PathVariable long id, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
         User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
-
-        Optional<Post> originalPost = postsRepository.findById(id);
-        if(originalPost.isEmpty()) {
+        if(loggedInUser != null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+        Optional<Post> optionalPost = postsRepository.findById(id);
+        if(optionalPost.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post " + id + " not found");
+        }
+        Post originalPost = optionalPost.get();
+
+        if(loggedInUser.getRole() != UserRole.ADMIN || loggedInUser.getId() != originalPost.getAuthor().getId()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
         // in case id is not in the request body (i.e., updatedPost), set it
@@ -85,8 +97,8 @@ public class PostsController {
         updatedPost.setId(id);
 
         // copy any new field values FROM updatedPost TO originalPost
-        BeanUtils.copyProperties(updatedPost, originalPost.get(), FieldHelper.getNullPropertyNames(updatedPost));
+        BeanUtils.copyProperties(updatedPost, originalPost, FieldHelper.getNullPropertyNames(updatedPost));
 
-        postsRepository.save(originalPost.get());
+        postsRepository.save(originalPost);
     }
 }

@@ -46,6 +46,8 @@ public class UsersController {
         userDTO.setEmail(loggedInUser.getEmail());
         userDTO.setRole(loggedInUser.getRole());
         userDTO.setUserName(loggedInUser.getUserName());
+        userDTO.setProfilePic(loggedInUser.getProfilePic());
+
         return userDTO;
     }
 

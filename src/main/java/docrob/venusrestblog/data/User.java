@@ -49,4 +49,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
+    @Transient
+    private String profilePic;
+
 }
