@@ -29,6 +29,12 @@ function addListenerToNavLinks() {
         if(event.target.classList.contains('my-bypass')) {
             return;
         }
+        if(e.target.type && e.target.type === "checkbox") {
+            return;
+        }
+        if(e.target.matches('label')) {
+            return;
+        }
         event.preventDefault();
         if (event.target.dataset['link'] !== undefined) {
             const URI = event.target.href.substring(location.origin.length);

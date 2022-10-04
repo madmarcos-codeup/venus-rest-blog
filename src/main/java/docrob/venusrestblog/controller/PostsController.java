@@ -48,7 +48,7 @@ public class PostsController {
     @PostMapping("")
     public void createPost(@RequestBody Post newPost, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
         User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
-        if(loggedInUser != null) {
+        if(loggedInUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
@@ -60,7 +60,7 @@ public class PostsController {
     @DeleteMapping("/{id}")
     public void deletePostById(@PathVariable long id, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
         User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
-        if(loggedInUser != null) {
+        if(loggedInUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
@@ -79,7 +79,7 @@ public class PostsController {
     @PutMapping("/{id}")
     public void updatePost(@RequestBody Post updatedPost, @PathVariable long id, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
         User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
-        if(loggedInUser != null) {
+        if(loggedInUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         Optional<Post> optionalPost = postsRepository.findById(id);
