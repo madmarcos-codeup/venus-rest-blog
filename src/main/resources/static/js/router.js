@@ -7,7 +7,7 @@ import Login, {LoginEvent} from "./views/Login.js";
 import Register from "./views/Register.js"
 import {RegisterEvent} from "./views/Register.js";
 import prepareUserHTML, {prepareUserJS} from "./views/User.js";
-import DoLogin, {DoLoginEvents} from "./views/DoLogin.js";
+// import DoLogin, {DoLoginEvents} from "./views/DoLogin.js";
 import Logout, {LogoutEvent} from "./views/Logout.js";
 
 /**
@@ -23,13 +23,13 @@ export default function router(URI) {
             uri: '/',
             title: 'Home',
         },
-        '/dologin': {
-            returnView: DoLogin,
-            state: {},
-            uri: '/dologin',
-            title: "DoLogin",
-            viewEvent: DoLoginEvents
-        },
+        // '/dologin': {
+        //     returnView: DoLogin,
+        //     state: {},
+        //     uri: '/dologin',
+        //     title: "DoLogin",
+        //     viewEvent: DoLoginEvents
+        // },
         '/login': {
             returnView: Login,
             state: {},

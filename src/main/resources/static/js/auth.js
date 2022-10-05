@@ -52,14 +52,10 @@ export function getHeaders() {
  * Attempts to set the access and refresh tokens needs to authenticate and authorize the client and user
  * @param responseData
  */
-function setTokens(responseData) {
-    if (responseData['access_token']) {
-        localStorage.setItem("access_token", responseData['access_token']);
+export function setTokens(responseData) {
+    if (responseData) {
+        localStorage.setItem("access_token", responseData);
         console.log("Access token set");
-    }
-    if (responseData['refresh_token']) {
-        localStorage.setItem("refresh_token", responseData['refresh_token']);
-        console.log("Refresh token set")
     }
 }
 
