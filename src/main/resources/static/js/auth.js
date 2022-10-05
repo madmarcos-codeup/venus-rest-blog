@@ -74,7 +74,29 @@ export function getUser() {
     if(!accessToken) {
         return false;
     }
-    return JSON.parse(window.localStorage.getItem("user"));
+    const parts = accessToken.split('.');
+    const payload = parts[1];
+    const decodedPayload = atob(payload);
+    const payloadObject = JSON.parse(decodedPayload);
+    console.log(payloadObject);
+    const user = {
+        userName: payloadObject.name,
+        role: "USER",
+        profilePic: payloadObject.picture
+    }
+    return user;
+}
+
+export function getUserRole() {
+    const accessToken = localStorage.getItem("access_token");
+    if(!accessToken) {
+        return false;
+    }
+    const parts = accessToken.split('.');
+    const payload = parts[1];
+    const decodedPayload = atob(payload);
+    const payloadObject = JSON.parse(decodedPayload);
+    return payloadObject.authorities[0];
 }
 
 export async function removeStaleTokens() {
@@ -86,7 +108,7 @@ export async function removeStaleTokens() {
         method: 'GET',
         headers: getHeaders()
     };
-    await fetch(`/api/users/authinfo`, request)
+    await fetch(`/api/users/me`, request)
         .then((response) => {
             // if fetch error then you might be using stale tokens
             if (response.status === 401) {

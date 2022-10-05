@@ -54,7 +54,7 @@ public class UsersController {
 
     @GetMapping("/me")
     private User fetchMe(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
-        User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
+        User loggedInUser = authBuddy.getUserFromAuthHeaderJWT(authHeader);
 
         return loggedInUser;
     }
