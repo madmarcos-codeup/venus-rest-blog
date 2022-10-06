@@ -11,6 +11,11 @@ export default async function createView(URI) {
     // createView must wait for stale token removal before finishing view creation
     await removeStaleTokens();
 
+    // return from Stripe has a ton of query parameters in it that Jalopy hates
+    if(URI.includes("paymentOk")) {
+        URI = "/paymentOk";
+    }
+
     let route = router(URI);
 
     // Store the title because the loading screen render overwrites it.
