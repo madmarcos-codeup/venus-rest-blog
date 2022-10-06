@@ -10,6 +10,11 @@ import {getHeaders, removeStaleTokens} from "./auth.js";
 export default async function createView(URI) {
     await removeStaleTokens();
 
+    console.log(URI);
+
+    // if(URI === "index.html" || URI === "/index.html") {
+    //     URI = "/";
+    // }
     let route = router(URI);
 
     // Store the title because the loading screen render overwrites it.
