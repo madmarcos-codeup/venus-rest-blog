@@ -78,7 +78,7 @@ export async function setUserInfo(jwt) {
     const payload = parts[1];
     const decodedPayload = atob(payload);
     const payloadObject = JSON.parse(decodedPayload);
-    console.log(payloadObject);
+    // console.log(payloadObject);
 
     const request = {
         method: 'GET',

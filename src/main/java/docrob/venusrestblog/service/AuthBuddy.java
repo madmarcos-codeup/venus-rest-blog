@@ -90,6 +90,8 @@ public class AuthBuddy {
         byte [] decodedBytes = Base64.getDecoder().decode(parts[1]);
         String decodedString = new String(decodedBytes);
 
+        // TODO: check jwt with google's public key to determine if it is ok
+
         // {"iss":"https://accounts.google.com","nbf":1664992935,"aud":"807309833487-uvihhc5be5ie00qj13a9d20kt9sovlp6.apps.googleusercontent.com","sub":"107139802099997183705","email":"docrob1337@gmail.com","email_verified":true,"azp":"807309833487-uvihhc5be5ie00qj13a9d20kt9sovlp6.apps.googleusercontent.com","name":"Doc Rob","picture":"https://lh3.googleusercontent.com/a-/ACNPEu_NulKPiimDFaM0ItqM9QeQzE8sRTp8Xy-Z5Myc=s96-c","given_name":"Doc","family_name":"Rob","iat":1664993235,"exp":1664996835,"jti":"b3bb8ca4faaa527340ce38b5a3082802de89e529"}
         JsonObject jo = JsonParser.parseString(decodedString).getAsJsonObject();
         String email = jo.get("email").toString().replaceAll("\"", "");
