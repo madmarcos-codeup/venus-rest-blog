@@ -67,7 +67,7 @@ public class PostsController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post id " + id + " not found");
         }
         Post originalPost = optionalPost.get();
-        if(loggedInUser.getRole() != UserRole.ADMIN || loggedInUser.getId() != originalPost.getAuthor().getId()) {
+        if(loggedInUser.getRole() != UserRole.ADMIN && loggedInUser.getId() != originalPost.getAuthor().getId()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
@@ -86,7 +86,7 @@ public class PostsController {
         }
         Post originalPost = optionalPost.get();
 
-        if(loggedInUser.getRole() != UserRole.ADMIN || loggedInUser.getId() != originalPost.getAuthor().getId()) {
+        if(loggedInUser.getRole() != UserRole.ADMIN && loggedInUser.getId() != originalPost.getAuthor().getId()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
