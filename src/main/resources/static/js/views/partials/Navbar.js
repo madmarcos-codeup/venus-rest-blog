@@ -8,7 +8,7 @@ export default function Navbar(props) {
             <a href="/about" data-link class="my-link">About</a>
         `;
 
-    if(isLoggedIn()) {
+    if (isLoggedIn()) {
         nav += `
             <a href="/logout" data-link class="my-link">Logout</a>
             <a href="/me" data-link class="my-link">About ME</a>
@@ -22,9 +22,9 @@ export default function Navbar(props) {
 
     let loginName = "Not logged in";
     let loginPhoto = "";
-    if(isLoggedIn()) {
+    if (isLoggedIn()) {
         const loggedInUser = getUser();
-        if(loggedInUser) {
+        if (loggedInUser) {
             console.log(loggedInUser);
 
             loginName = "Logged in as " + loggedInUser.userName;

@@ -1,16 +1,7 @@
 
 export function setLoggedInUserInfo() {
-    const request = {
-        method: "GET",
-        headers: getHeaders()
-    }
-    const url = BACKEND_HOST_URL + "/api/users/authinfo";
-    fetch(url, request)
-        .then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            window.localStorage.setItem("user", JSON.stringify(data));
-        });
+    const jwt = JSON.parse(localStorage.getItem("access_token"));
+    setUserInfo(jwt);
 }
 
 export function checkForLoginTokens(url) {
@@ -52,10 +43,11 @@ export function getHeaders() {
  * Attempts to set the access and refresh tokens needs to authenticate and authorize the client and user
  * @param responseData
  */
-export function setTokens(responseData) {
-    if (responseData) {
-        localStorage.setItem("access_token", responseData);
-        console.log("Access token set");
+export function setTokens(jwt) {
+    if(jwt) {
+        localStorage.setItem("access_token", jwt);
+        setUserInfo(jwt);
+        console.log("Access token and user info set");
     }
 }
 
@@ -70,33 +62,43 @@ export function isLoggedIn() {
 
 //  returns an object with user_name and authority from the access_token
 export function getUser() {
-    const accessToken = localStorage.getItem("access_token");
-    if(!accessToken) {
+    const userString = localStorage.getItem("user");
+    console.log(userString);
+    if(userString)
+        return JSON.parse(userString);
+    return null;
+}
+
+// this only gets called when the user logs in (receives the JWT)
+export async function setUserInfo(jwt) {
+    if(!jwt) {
         return false;
     }
-    const parts = accessToken.split('.');
+    const parts = jwt.split('.');
     const payload = parts[1];
     const decodedPayload = atob(payload);
     const payloadObject = JSON.parse(decodedPayload);
     console.log(payloadObject);
-    const user = {
-        userName: payloadObject.name,
-        role: "USER",
-        profilePic: payloadObject.picture
-    }
-    return user;
-}
 
-export function getUserRole() {
-    const accessToken = localStorage.getItem("access_token");
-    if(!accessToken) {
-        return false;
-    }
-    const parts = accessToken.split('.');
-    const payload = parts[1];
-    const decodedPayload = atob(payload);
-    const payloadObject = JSON.parse(decodedPayload);
-    return payloadObject.authorities[0];
+    const request = {
+        method: 'GET',
+        headers: getHeaders()
+    };
+    return fetch(`${BACKEND_HOST_URL}/api/users/me`, request)
+        .then((response) => {
+            return response.json();
+        }).then((data) => {
+            const user = {
+                userName: payloadObject.name,
+                role: data.role,
+                profilePic: payloadObject.picture
+            };
+            window.localStorage.setItem("user", JSON.stringify(user));
+            // console.log(user);
+            return user;
+        }).catch(error => {
+            console.log("FETCH ERROR: " + error);
+        });
 }
 
 export async function removeStaleTokens() {

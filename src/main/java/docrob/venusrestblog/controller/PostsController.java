@@ -1,6 +1,5 @@
 package docrob.venusrestblog.controller;
 
-import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
@@ -17,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +45,7 @@ public class PostsController {
 
     @PostMapping("")
     public void createPost(@RequestBody Post newPost, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
-        User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
+        User loggedInUser = authBuddy.getUserFromAuthHeaderJWT(authHeader);
         if(loggedInUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
@@ -59,7 +57,7 @@ public class PostsController {
 
     @DeleteMapping("/{id}")
     public void deletePostById(@PathVariable long id, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
-        User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
+        User loggedInUser = authBuddy.getUserFromAuthHeaderJWT(authHeader);
         if(loggedInUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
@@ -78,7 +76,7 @@ public class PostsController {
 
     @PutMapping("/{id}")
     public void updatePost(@RequestBody Post updatedPost, @PathVariable long id, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader) {
-        User loggedInUser = authBuddy.getUserFromAuthHeader(authHeader);
+        User loggedInUser = authBuddy.getUserFromAuthHeaderJWT(authHeader);
         if(loggedInUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }

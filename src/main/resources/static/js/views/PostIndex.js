@@ -106,6 +106,7 @@ function generatePostsHTML(posts) {
         </thead>
         <tbody>
     `;
+
     for (let i = 0; i < posts.length; i++) {
         const post = posts[i];
 
