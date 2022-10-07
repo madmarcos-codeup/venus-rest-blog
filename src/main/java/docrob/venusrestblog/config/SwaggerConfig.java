@@ -26,8 +26,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo(){
         return new ApiInfo(
-                "Spring Boot Blog REST APIs",
-                "Spring Boot Blog REST API Documentation",
+                "Venus REST Blog API",
+                "Venus REST Blog API Documentation",
                 "1",
                 "Terms of service",
                 new Contact("Docrob", "www.example.com", "mark.robinson@codeup.com"),
