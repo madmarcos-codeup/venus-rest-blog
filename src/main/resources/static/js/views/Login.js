@@ -16,6 +16,7 @@ export function LoginEvent() {
 
 function handleCredentialResponse(loginInfo) {
     const jwt = loginInfo.credential;
+    console.log(jwt);
     setTokens(jwt);
     createView("/");
 }
