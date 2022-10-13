@@ -9,8 +9,6 @@ import docrob.venusrestblog.service.S3Service;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,7 +22,6 @@ import java.util.Optional;
 @RequestMapping(value = "/api/users", produces = "application/json")
 public class UsersController {
     private UsersRepository usersRepository;
-    private PasswordEncoder passwordEncoder;
     private S3Service s3Service;
 
     @GetMapping("")
@@ -54,12 +51,8 @@ public class UsersController {
     }
 
     @GetMapping("/me")
-    private Optional<User> fetchMe(OAuth2Authentication auth) {
-        if(auth ==  null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please login");
-        }
-        String userName = auth.getName();
-        User user = usersRepository.findByUserName(userName);
+    private Optional<User> fetchMe() {
+        User user = usersRepository.findByUserName("Doc Rob");
         user.setPhotourl(s3Service.getSignedURL(user.getPhotoFileName()));
 
         return Optional.of(user);
@@ -84,10 +77,6 @@ public class UsersController {
     public void createUser(@RequestBody User newUser) {
         // TODO: validate new user fields
         newUser.setRole(UserRole.USER);
-
-        String plainTextPassword = newUser.getPassword();
-        String encryptedPassword = passwordEncoder.encode(plainTextPassword);
-        newUser.setPassword(encryptedPassword);
 
         // don't need the below line at this point but just for kicks
         newUser.setCreatedAt(LocalDate.now());

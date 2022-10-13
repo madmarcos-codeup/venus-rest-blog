@@ -14,3 +14,11 @@
 .my-category-group {
     margin-top: 10px;
 }
+
+.is-failure {
+    background-color: red;
+}
+
+.is-success {
+    background-color: green;
+}
