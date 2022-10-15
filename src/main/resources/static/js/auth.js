@@ -1,3 +1,4 @@
+import createView from "./createView.js";
 
 export function setLoggedInUserInfo() {
     const request = {
@@ -10,6 +11,7 @@ export function setLoggedInUserInfo() {
             return response.json();
         }).then(function(data) {
             window.localStorage.setItem("user", JSON.stringify(data));
+            createView("/");
         });
 }
 

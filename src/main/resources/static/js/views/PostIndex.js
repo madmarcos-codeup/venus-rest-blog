@@ -123,7 +123,7 @@ function generatePostsHTML(posts) {
             authorName = post.author.userName;
         }
         postsHTML += `<tr>
-            <td>${post.title}</td>
+            <td><a data-link href="/posts/${post.id}">${post.title}</a></td>
             <td>${post.content}</td>
             <td>${categories}</td>
             <td>${authorName}</td>`;
