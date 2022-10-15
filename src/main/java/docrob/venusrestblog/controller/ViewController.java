@@ -2,6 +2,7 @@ package docrob.venusrestblog.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
@@ -16,7 +17,7 @@ public class ViewController {
         return new RedirectView("index.html");
     }
 
-    @RequestMapping({"/", "/about", "/login", "/logout", "/home", "/posts", "/register", "/me"})
+    @RequestMapping({"/", "/about", "/login", "/logout", "/home", "/posts", "/register", "/me", "/posts/{id}"})
     public String showView() {
         return "forward:/index.html";
     }
