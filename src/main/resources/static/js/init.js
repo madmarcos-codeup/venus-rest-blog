@@ -1,5 +1,5 @@
 import createView from './createView.js';
-import {isLoggedIn} from "./auth";
+import {isLoggedIn} from "./auth.js";
 
 
 export default function init() {

@@ -1,4 +1,4 @@
-const POST_API_BASE_URL = "http://localhost:8081/api/posts";
-const USER_API_BASE_URL = "http://localhost:8081/api/users";
+const POST_API_BASE_URL = "http://localhost:8080/api/posts";
+const USER_API_BASE_URL = "http://localhost:8080/api/users";
 
-const BACKEND_HOST_URL = "http://localhost:8081";
+const BACKEND_HOST_URL = "http://localhost:8080";
