@@ -2,6 +2,7 @@
 
 src/main/resources/application.properties
 private_constants.js
+private_constants_backup.js
 
 HELP.md
 target/
